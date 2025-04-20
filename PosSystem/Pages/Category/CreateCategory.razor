@@ -1,0 +1,25 @@
+﻿@page "/category/create"
+@using Radzen
+<div class="row d-flex justify-content-around">
+    <div class="col-5">
+        @if (UploadFile is not null)
+        {
+            <div class="row">
+                <MudImage Src="@UploadFile" Alt="@FileName" Elevation="25" Class="rounded-lg" />
+            </div>
+        }
+    </div>
+    <EditForm Model="Model" class="col-5 mx-auto shadow p-5" OnValidSubmit="SubmitCategory">
+        <div class="row">
+            <MudTextField @bind-Value="@Model.CategoryName" Label="Category Name" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        </div>
+        <div class="row">
+            <Radzen.Blazor.RadzenUpload Multiple="false"  Change=@OnChangeAsync Style="width: 100%" ChooseText="Choose category image" />
+        </div>
+       
+        <div class="row">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </EditForm>
+
+</div>

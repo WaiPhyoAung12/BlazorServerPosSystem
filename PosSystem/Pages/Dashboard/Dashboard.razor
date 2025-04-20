@@ -1,0 +1,18 @@
+﻿@page "/"
+<div class="container">
+    <div class="row d-grid gap-3 d-flex">
+        @foreach(var category in CategoryList)
+        {
+            <div class="col-3">
+                <MudCard Outlined="true">
+                    <MudCardMedia Image="@($"{ImagePath}{category.ImageName}")" Height="200" />
+                    <MudCardActions Class="d-flex justify-content-center">
+                        <MudButton Variant="MudBlazor.Variant.Text" Color="Color.Primary">@category.CategoryName</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </div>
+        }      
+    </div>
+</div>
+
+

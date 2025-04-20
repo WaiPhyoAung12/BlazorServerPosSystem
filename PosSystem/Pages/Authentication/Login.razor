@@ -1,0 +1,35 @@
+﻿@layout LoginLayout
+@page "//login"
+
+@using FluentValidation
+@using PosSystem.Models.Login
+
+<EditForm Model="Model" style="height:100vh" OnValidSubmit="SubmitLogin" class="d-flex align-items-center justify-content-center">
+    <DataAnnotationsValidator />
+
+    <div class="col-5 shadow rounded p-5">
+        <h4>User Login Form</h4>
+        <div class="row">
+            <MudTextField @bind-Value="Model.UserName"
+                          Label="User Name"
+                          For="@(() => Model.UserName)"
+                          Margin="MudBlazor.Margin.Dense"
+                          Variant="MudBlazor.Variant.Outlined">
+            </MudTextField>
+        </div>
+        <div class="row">
+            <MudTextField @bind-Value="Model.Password"
+                          Label="Password"
+                          Margin="MudBlazor.Margin.Dense"
+                          For="@(() => Model.Password)"
+                          Variant="MudBlazor.Variant.Outlined">
+            </MudTextField>
+        </div>
+        <div class="row">
+            <MudButton Variant="MudBlazor.Variant.Filled" ButtonType="MudBlazor.ButtonType.Submit" Size="MudBlazor.Size.Medium" Color="MudBlazor.Color.Tertiary">Login</MudButton>
+        </div>
+    </div>
+
+</EditForm>
+
+

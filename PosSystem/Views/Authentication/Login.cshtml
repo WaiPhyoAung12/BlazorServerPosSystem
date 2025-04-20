@@ -1,0 +1,30 @@
+﻿@using PosSystem.Models.Login
+@model LoginRequestModel
+<!doctype html>
+<html lang="en" data-bs-theme="auto">
+<head>
+    <base href="~/" />
+    <link rel="stylesheet" href="~/css/bootstrap/bootstrap.min.css"  />
+</head>
+<body>
+    <div style="height:100vh;" class="d-flex justify-content-center align-items-center">
+        <form method="post" class="col-4 shadow p-5 rounded">
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">User Name</label>
+                <input type="text" class="form-control" name="UserName" id="userName">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" name="Password" id="exampleInputPassword1">
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    
+</body>
+</html>
+

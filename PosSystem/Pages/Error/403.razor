@@ -1,0 +1,21 @@
+﻿@page "/403"
+<div class="access-denied-page p-5">
+    <MudPaper Class="paper-container p-5" Elevation="4">
+        <MudIcon Icon="@Icons.Material.Filled.Lock" Style="size:100px;" Color="Color.Error" />
+        <h1 class="code">403</h1>
+        <h2 class="message">Access Denied</h2>
+        <p class="description">You do not have permission to view this page.</p>
+        <MudButton Variant="MudBlazor.Variant.Filled" Color="Color.Primary" OnClick="GoHome">
+            Go to Home
+        </MudButton>
+    </MudPaper>
+</div>
+
+@code {
+    [Inject] NavigationManager Navigation { get; set; }
+
+    void GoHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}
