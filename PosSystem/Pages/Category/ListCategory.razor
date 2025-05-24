@@ -1,0 +1,53 @@
+﻿@using Radzen.Blazor
+@using Radzen
+@attribute [Authorize]
+
+@page "/category/list"
+
+<RadzenStack Gap="1rem">
+    <div class="row">
+        <div class="col-3">
+            <RadzenButton Text="add" Icon="add" Click="AddButtonAction" ButtonStyle="ButtonStyle.Primary" />
+        </div>
+        <div class="col-3 ms-auto">
+            <div class="input-group">
+                <RadzenTextBox class="form-control" Placeholder="Search" @bind-Value="@SearchValue" />
+                <RadzenButton Icon="search" Click="SearchButtonAction" ButtonStyle="ButtonStyle.Primary" />
+            </div>
+        </div>
+    </div>
+
+    <RadzenDataGrid @ref=@dataGrid
+                    Data="@categoryList"
+                    LoadData="LoadDataAsync"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Center"
+                    AllowSorting="true"
+                    PageSizeOptions="@pageSizeOptions"
+                    ShowPagingSummary="@showPagerSummary"
+                    Count="count"
+                   >
+       
+        <Columns>
+            <RadzenDataGridColumn TextAlign="TextAlign.Center" Property="CategoryName" Title="Name" />
+            <RadzenDataGridColumn TextAlign="TextAlign.Center" Title="Image">
+                <Template Context="detail">
+                    <img src="@($"{ImageBaseUrl}/{detail.ImageName}")" alt="Product Image" style="width: 60px; height: auto;" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TextAlign="TextAlign.Center">
+                <Template Context="detail">
+                    <a class="text-decoration-none text-primary" href="@($"/product/list/{detail.Id.ToString()}")">View Products</a>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TextAlign="TextAlign.Center" Title="Actions">
+                <Template Context="detail">
+                    <MudIcon Icon="@Icons.Material.Filled.DriveFileRenameOutline" @onclick="()=>EditCategory(detail)" Title="Edit" Color="Color.Primary" Style="cursor:pointer; margin-right:10px;" />
+                    <MudIcon Icon="@Icons.Material.Filled.Delete" Title="Delete" @onclick="()=>DeleteCategory(detail)" Color="Color.Error" Style="cursor:pointer;" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
+
+

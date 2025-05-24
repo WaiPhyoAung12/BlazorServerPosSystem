@@ -20,7 +20,16 @@ using Microsoft.Extensions.FileProviders;
 using PosSystem.Services.Category;
 using PosSystem.Domain.Category;
 using Radzen;
+using PosSystem.Services.Dialog;
+using PosSystem.Services.Product;
+using PosSystem.Domain.Product;
+using PosSystem.Services.Shared;
+using PosSystem.Models.Image;
+using PosSystem.Services.Sale;
+using PosSystem.Domain.Sale;
 var builder = WebApplication.CreateBuilder(args);
+var imageBaseDirectory = builder.Configuration["ImageBaseDirectory"];        
+var imageUrl = builder.Configuration["ImageUrl"];
 
 // Add services to the container.
 builder.Services.AddMudServices();
@@ -33,7 +42,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection")));
+{
+    // Set the default query tracking behavior to NoTracking for all queries
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+    // Use SQL Server with the connection string from the configuration
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
+});
+
+builder.Services.Configure<ImageSetting>(
+    builder.Configuration);
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
@@ -46,9 +64,14 @@ builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<LoginRepo>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
 builder.Services.AddScoped<CategoryRepo>();
+builder.Services.AddScoped<IDialogServiceProvider, DialogServiceProvider>();
+builder.Services.AddScoped<IProductService,ProductService>();
+builder.Services.AddScoped<ProductRepo>();
+builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<SaleRepo>();
+builder.Services.AddScoped<HttpContextService>();
 builder.Services.AddTransient<CookieMiddleware>();
 builder.Services.AddSingleton<WeatherForecastService>();
-
 
 var app = builder.Build();
 
@@ -62,6 +85,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(imageBaseDirectory),
+    RequestPath = imageUrl
+});
 
 app.UseMiddleware<CookieMiddleware>();
 app.UseRouting();

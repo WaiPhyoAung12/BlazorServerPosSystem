@@ -1,0 +1,77 @@
+﻿@page "/product/create"
+@page "/product/edit/{productId}"
+@attribute [Authorize]
+@using PosSystem.Models.Category
+@using PosSystem.Models.Product
+@using Radzen.Blazor
+
+<div class="row d-flex justify-content-around">
+    <div class="col-5 py-5 shadow rounded bg-white" style="height:300px;max-height:300px;">
+        <div class="row d-flex justify-content-center">
+            <h3 class="text-center">Upload Image</h3>
+        </div>
+        @if (UploadFile is not null || Model.ImagePath is not null)
+        {
+            <div class="row">
+                <MudImage Src="@((UploadFile is not null) ? UploadFile :
+                            (ImagePath is not null ?ImagePath : ""))"
+                          Height="200" Width="400" ObjectFit="ObjectFit.Cover" Alt="@FileName" />
+            </div>
+        }
+    </div>
+    <EditForm Model="Model" class="col-5 shadow py-5 bg-white rounded" OnValidSubmit="SubmitCategory">
+        <div class="row d-flex justify-content-center">
+            <h3 class="text-center">Create Prouct</h3>
+        </div>
+        @if (string.IsNullOrEmpty(CategoryName))
+        {
+            <div class="row mb-3 px-5">
+                <RadzenDropDown id="categorySelect"
+                                placeholder="Select a Category"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.StartsWith"
+                                AllowFiltering="true"
+                                Data="@CategoryList"
+                                TextProperty="@nameof(CategoryModel.CategoryName)"
+                                ValueProperty="@nameof(CategoryModel.Id)"
+                                @bind-Value="Model.CategoryId"
+                                Style="width: 100%; max-width: 400px;"
+                                Name="DropDownFiltering" />
+            </div>
+                
+        }
+        else
+        {
+            <div class="row mb-3 px-5">
+                <MudTextField @bind-Value="@CategoryName" Label="Category Name" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+            </div>
+        }
+        <div class="row mb-3 px-5">
+            <MudTextField @bind-Value="@Model.ProductName" Label="Product Name" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        </div>
+        <div class="row mb-3 px-5">
+            <MudNumericField Min="0" @bind-Value="@Model.Price" Format="F2" Label="Product Price" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+        </div>
+        <div class="row mb-3 px-5">
+            <MudNumericField Min="0" @bind-Value="@Model.StockQuantity" Label="Stock Quantity" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+        </div>
+
+        <div class="row mb-3 px-5">
+            <MudFileUpload T="IBrowserFile" FilesChanged="OnChangeAsync">
+                <ActivatorContent>
+                    <MudButton Size="Size.Small"
+                               Variant="MudBlazor.Variant.Filled"
+                               Color="Color.Success"
+                               StartIcon="@Icons.Material.Filled.AttachFile">
+                        Upload Image
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+        </div>
+
+        <div class="row d-flex justify-content-end px-5">
+            <button type="submit" class="col-3 btn btn-primary">Submit</button>
+        </div>
+    </EditForm>
+
+</div>

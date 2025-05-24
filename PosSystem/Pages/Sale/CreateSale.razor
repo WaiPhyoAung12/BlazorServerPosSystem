@@ -1,0 +1,113 @@
+﻿@page "/sales/create"
+@attribute [Authorize]
+@using PosSystem.Constant
+@using PosSystem.Services.Shared
+@using Radzen.Blazor
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
+
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
+<div class="row d-flex justify-content-around px-2">
+    <div class="shadow h-100 col-7 py-5 bg-white rounded">
+        <div class="row d-flex justify-content-center">
+            <h5 class="text-center">Sale Prouct List</h5>
+        </div>
+        <div>
+            @if (Model.SaleDetailsList.Count > 0)
+            {
+                <MudTable Hover="true" Breakpoint="Breakpoint.Sm" Items="Model.SaleDetailsList" LoadingProgressColor="Color.Info">
+                    <HeaderContent>
+                        <MudTh>Nr</MudTh>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Price</MudTh>
+                        <MudTh>Count</MudTh>
+                        <MudTh>Total Price</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="item">
+                         <MudTd DataLabel="Nr">1</MudTd>
+                         <MudTd DataLabel="ProductName">@item.ProductName</MudTd>
+                        <MudTd DataLabel="Price">@item.UnitPrice</MudTd>
+                        <MudTd DataLabel="Count">@item.Quantity</MudTd>
+                        <MudTd DataLabel="Molar mass">@item.SubTotal</MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="()=>DeleteProduct(item)" Color="Color.Error" aria-label="delete" />
+@*                             <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="edit" />
+ *@                        </MudTd>
+                    </RowTemplate>
+                    <FooterContent>
+                        <MudTd ColSpan="3"></MudTd>
+                        <MudTd>Total Count:<b>@Model.SaleDetailsList.Sum(x => x.Quantity)</b></MudTd>
+                        <MudTd ColSpan="2">Total Price:<b>@Model.SaleDetailsList.Sum(x => x.SubTotal) Ks </b></MudTd>
+                        <MudTd></MudTd>
+                    </FooterContent>
+                </MudTable>
+               @*  <MudRadioGroup T="int" Value="Model.PaymentType" ValueChanged="PaymentTypeChoose">
+                    <MudRadio T="int" Value="EnumPaymentTypes.Cash.ToInt()" Color="Color.Primary">Cash</MudRadio>
+                    <MudRadio T="int" Value="EnumPaymentTypes.Others.ToInt()" Color="Color.Primary">Others</MudRadio>
+                </MudRadioGroup> *@
+                <div class="my-3">
+                    <span class="fw-bold">Choose Payment Type: </span>
+                    <RadzenRadioButtonList @bind-Value=@Model.PaymentType class="mt-2" Change="PaymentTypeChoose" TValue="int">
+                        <Items>
+                            <RadzenRadioButtonListItem Text="Cash" Value="1" />
+                            <RadzenRadioButtonListItem Text="Others" Value="2" />
+                        </Items>
+                    </RadzenRadioButtonList>
+                </div>
+                
+                @if (ShowCashForm)
+                {
+                    <div class="mt-5">
+                        <MudNumericField HideSpinButtons="true" Min="0" Format="F2" @onblur="CalculateChange" Label="Customer Payment Amount" @bind-Value="@Model.AmountPaid" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+                        <MudNumericField HideSpinButtons="true" Min="0" Format="F2" ReadOnly Label="Changes" @bind-Value="@Model.Changes" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+                    </div>
+                }
+                else
+                {
+                    
+                }
+               
+                <div class="d-flex justify-content-end mt-2">
+                    <MudButton StartIcon="@Icons.Material.Filled.Clear" Color="Color.Error" Variant="MudBlazor.Variant.Filled" OnClick="Reset">Reset</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="MudBlazor.Variant.Filled" Color="Color.Primary" OnClick="SubmitSale" Class="ms-2">Submit</MudButton>
+                </div>
+               
+            }
+        </div>
+    </div>
+    
+    <EditForm Model="SaleDetailsModel" class="shadow h-100 col-4 py-5 bg-white rounded" OnValidSubmit="SubmitCategory">
+        <div class="row d-flex justify-content-center">
+            <h5 class="text-center">Sale Prouct</h5>
+        </div>
+        <div class="input-group mb-3 px-2">
+            <RadzenNumeric class="form-control" ShowUpDown="false" TValue="int?" Placeholder="Enter Code" @bind-Value="@BarCode" />
+            <RadzenButton Click="GetProduceByBarCode" Icon="keyboard_return" ButtonStyle="ButtonStyle.Primary"/>
+        </div> 
+            
+        <div class="row mb-3 px-5">
+            <MudTextField @bind-Value="@ProductModel.ProductName" ReadOnly Label="Product Name" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        </div>
+        <div class="row mb-3 px-5">
+            <MudNumericField HideSpinButtons="true" Min="0" ReadOnly @bind-Value="@SaleDetailsModel.UnitPrice" Format="F2" Label="Unit Price" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+        </div>
+        <div class="row mb-3 px-5">
+            <MudNumericField Min="0" @bind-Value="@SaleDetailsModel.Quantity" @onblur="CalculateTotalPrice" Label="Count" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+        </div>
+        <div class="row mb-3 px-5">
+            <MudNumericField Min="0" HideSpinButtons="true" ReadOnly @bind-Value="@SaleDetailsModel.SubTotal" Format="F2" Label="Total Price" Variant="MudBlazor.Variant.Outlined" Margin="Margin.Dense"></MudNumericField>
+        </div>
+        <div class="d-flex justify-content-end">
+            <MudButton Variant="MudBlazor.Variant.Filled" ButtonType="MudBlazor.ButtonType.Submit" Color="Color.Success">Save</MudButton>
+        </div>
+    </EditForm>
+
+</div>
+

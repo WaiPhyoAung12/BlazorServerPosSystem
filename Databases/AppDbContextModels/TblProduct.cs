@@ -9,11 +9,13 @@ public partial class TblProduct
 
     public string ProductName { get; set; } = null!;
 
-    public string BarCode { get; set; } = null!;
+    public int BarCode { get; set; }
 
     public decimal Price { get; set; }
 
     public int StockQuantity { get; set; }
+
+    public string ImagePath { get; set; } = null!;
 
     public int CategoryId { get; set; }
 
