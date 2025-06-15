@@ -1,0 +1,64 @@
+﻿@using MudBlazor
+@using PosSystem.Models.PaymentType
+@using PosSystem.Services.PaymentType
+<MudDialogProvider></MudDialogProvider>
+<MudDialog>
+    <DialogContent>
+        <MudText>Choose Payment Type</MudText>
+    </DialogContent>
+    <DialogContent>
+        @if (PaymentTypeList.PaymentTypeModels.Count > 0)
+        {
+            <div class="row d-flex justify-content-center">
+                @foreach (var paymentType in PaymentTypeList.PaymentTypeModels)
+                {
+                    <div class="col-3">
+                        <MudButton Variant="MudBlazor.Variant.Outlined" OnClick="()=>ChoosePaymentType(paymentType)" Color="Color.Primary">@paymentType.PaymentName</MudButton>
+                    </div>
+                }
+            </div>
+
+        }
+        else
+        {
+            <MudText>No Payment Methods</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+
+</MudDialog>
+@code {
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    private PaymentTypeModelList PaymentTypeList { get; set; } = new();
+
+    public PaymentTypeModel Model { get; set; } = new();
+
+    [Parameter]
+    public int PaymentMethod { get; set; }
+
+    [Inject]
+    public IPaymentTypeService _paymentTypeService { get; set; } = default!;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var result = await _paymentTypeService.GetPaymentTypesByPaymentMethod(PaymentMethod);
+        if (result.IsSuccess)
+            PaymentTypeList = result.Data!;
+
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void ChoosePaymentType(PaymentTypeModel paymentTypeModel)
+    {
+        Model = paymentTypeModel;
+        MudDialog.Close(DialogResult.Ok(Model));
+
+    }
+}

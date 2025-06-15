@@ -21,6 +21,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblPayment> TblPayments { get; set; }
 
+    public virtual DbSet<TblPaymentType> TblPaymentTypes { get; set; }
+
     public virtual DbSet<TblProduct> TblProducts { get; set; }
 
     public virtual DbSet<TblRole> TblRoles { get; set; }
@@ -81,6 +83,17 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.CreatedUserId).HasMaxLength(50);
             entity.Property(e => e.UpdatedDateTime).HasColumnType("datetime");
             entity.Property(e => e.UpdatedUserId).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<TblPaymentType>(entity =>
+        {
+            entity.ToTable("TblPaymentType");
+
+            entity.Property(e => e.CreatedDateTime).HasColumnType("datetime");
+            entity.Property(e => e.CreatedUserId).HasMaxLength(100);
+            entity.Property(e => e.PaymentName).HasMaxLength(100);
+            entity.Property(e => e.UpdatedDateTime).HasColumnType("datetime");
+            entity.Property(e => e.UpdatedUserId).HasMaxLength(100);
         });
 
         modelBuilder.Entity<TblProduct>(entity =>

@@ -12,10 +12,18 @@ public class HttpContextService
     }
     public string UserId => GetUserId();
 
+    public int RoleId => GetRoleId();
+
     private string? GetUserId()
     {
         var userId = GetClaimValue("UserId");
         return userId;
+    }
+
+    private int GetRoleId()
+    {
+        var roleId = GetClaimValue(ClaimTypes.Role);
+        return roleId is null?0:roleId.ToInt();
     }
 
     public string? GetClaimValue(string key)

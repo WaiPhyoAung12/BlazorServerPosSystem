@@ -151,8 +151,8 @@ public class ProductRepo
         if (!searchString!.IsNullOrEmpty())
         {
             query = query.Where(x => x.ProductName.Contains(searchString!)
-                                    || x.Price.Equals(searchString)
-                                    || x.StockQuantity.Equals(searchString!)
+                                    || x.Price.Equals(searchString!.ToInt())
+                                    || x.StockQuantity.Equals(searchString!.ToInt())
                                     || x.CategoryName.Contains(searchString!)
                                      || x.CreatedDateTime.ToString().Contains(searchString!)
                                      );
@@ -216,11 +216,21 @@ public class ProductRepo
         if (isDuplicate)
             return Result<ProductModel>.Fail("Data Already Exist");
 
-        var imageName = productRequestModel.ImageName.GetImageName();
+        var imageName = productRequestModel.OldImageName;
 
-        bool successSave = await SaveProductImages(imageName, productRequestModel);
-        if (!successSave)
-            return Result<ProductModel>.Fail("Image Save error");
+        if (productRequestModel.ImageFile is not null)
+        {
+            imageName = productRequestModel.ImageName.GetImageName();
+            bool successSave = await SaveProductImages(imageName, productRequestModel);
+            if (!successSave)
+                return Result<ProductModel>.Fail("Image Save error");
+        }
+
+        //var imageName = productRequestModel.ImageName.GetImageName();
+
+        //bool successSave = await SaveProductImages(imageName, productRequestModel);
+        //if (!successSave)
+        //    return Result<ProductModel>.Fail("Image Save error");
 
         var userId = _httpContextService.UserId;
         if (string.IsNullOrEmpty(userId))

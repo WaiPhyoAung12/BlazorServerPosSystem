@@ -10,6 +10,10 @@ public class SaleRequestValidator:AbstractValidator<SaleRequestModel>
             .GreaterThan(0)
             .WithMessage("Total amount is required");
 
+        RuleFor(x => x.AmountPaid)
+            .GreaterThan(0)
+            .WithMessage("Invalid paid amount");
+
         RuleFor(x => x.TotalCount)
             .GreaterThan(0)
             .WithMessage("Total count is required");

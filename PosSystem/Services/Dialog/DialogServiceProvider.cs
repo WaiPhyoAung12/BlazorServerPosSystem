@@ -14,7 +14,7 @@ public class DialogServiceProvider : IDialogServiceProvider
         _dialogService = dialogService;
     }
 
-    public async void ShowDialogAsync(string message,string title)
+    public async void ShowDialogAsync(string message, string title)
     {
         MudBlazor.DialogOptions options = new MudBlazor.DialogOptions()
         {
@@ -30,7 +30,8 @@ public class DialogServiceProvider : IDialogServiceProvider
 
         await _dialogService.ShowAsync<MudMessageDialog>("", parameters, options);
     }
-    public async Task<DialogResult> ShowConfirmDialogAsync(string message,string title)
+
+    public async Task<DialogResult> ShowConfirmDialogAsync(string message, string title)
     {
         MudBlazor.DialogOptions options = new MudBlazor.DialogOptions()
         {
@@ -43,7 +44,7 @@ public class DialogServiceProvider : IDialogServiceProvider
             { x => x.DialogTitle, title },
             { x => x.DialogContent, message },
         };
-       var dialog= await _dialogService.ShowAsync<MudMessageDialog>("", parameters, options);
+        var dialog = await _dialogService.ShowAsync<MudMessageDialog>("", parameters, options);
         return await dialog.Result;
     }
 
@@ -60,6 +61,26 @@ public class DialogServiceProvider : IDialogServiceProvider
             { x => x.DialogTitle, title },
         };
         var dialog = await _dialogService.ShowAsync<MudDeleteConfirmDialog>("", parameters, options);
+        return await dialog.Result;
+    }
+
+    public async Task<DialogResult> ShowPaymentTypeDialogAsync(int paymentMethod)
+    {
+        MudBlazor.DialogOptions options = new MudBlazor.DialogOptions()
+        {
+            Position = MudBlazor.DialogPosition.Center,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true,
+            CloseButton = true,
+        };
+
+        var parameters = new DialogParameters
+        {
+            { "PaymentMethod", paymentMethod }
+        };
+
+
+        var dialog = await _dialogService.ShowAsync<MudPaymentDialog>("Choose payment type", parameters, options);
         return await dialog.Result;
     }
 }

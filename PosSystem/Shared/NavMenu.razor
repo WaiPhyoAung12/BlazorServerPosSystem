@@ -1,4 +1,7 @@
-﻿
+﻿@using PosSystem.Models.Function
+@using PosSystem.Services.Function
+@using PosSystem.Services.Shared
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">PosSystem</a>
@@ -10,7 +13,18 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
+        @if (FunctionList.FunctonListModel.Count > 0)
+        {
+            foreach(var function in FunctionList.FunctonListModel)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="">
+                        @function.Module
+                    </NavLink>
+                </div>
+            }
+        }
+       @*  <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
@@ -24,17 +38,38 @@
             <NavLink class="nav-link" href="fetchdata">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
-        </div>
+        </div> *@
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    [Inject]
+    public HttpContextService httpContextService { get; set; } = default!;
+
+    [Inject]
+    public IFunctionService functionService { get; set; } = default!;
+
+    public FunctionListResponseModel FunctionList { get; set; } = new();
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var roleId = httpContextService.RoleId;
+            var functionListResponse = await functionService.GetFunctionsByRoleId(roleId);
+            if (functionListResponse.IsSuccess)
+            {
+                FunctionList = functionListResponse.Data!;
+            }
+            StateHasChanged();
+        }
     }
 }

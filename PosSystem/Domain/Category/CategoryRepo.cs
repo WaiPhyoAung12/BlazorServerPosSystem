@@ -227,11 +227,15 @@ public class CategoryRepo
         if (isDuplicate)
             return Result<CategoryModel>.Fail("Data Already Exist");
 
-        var imageName = categoryRequestModel.ImageName.GetImageName();
+        var imageName = categoryRequestModel.OldImageName;
 
-        bool successSave = await SaveCategoryImages(imageName, categoryRequestModel);
-        if (!successSave)
-            return Result<CategoryModel>.Fail("Image Save error");
+        if(categoryRequestModel.ImageFile is not null)
+        {
+            imageName = categoryRequestModel.ImageName.GetImageName();
+            bool successSave = await SaveCategoryImages(imageName, categoryRequestModel);
+            if (!successSave)
+                return Result<CategoryModel>.Fail("Image Save error");
+        }      
 
         var userId = _httpContextService.UserId;
         if (string.IsNullOrEmpty(userId))
@@ -256,6 +260,7 @@ public class CategoryRepo
     {
         try
         {
+           
             if (categoryRequestModel.OldImageName is not null)
             {
                 var imagePath = Path.Combine(_imageSetting.ImageBaseDirectory, categoryRequestModel.OldImageName);

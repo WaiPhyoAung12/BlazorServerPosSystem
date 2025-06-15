@@ -109,7 +109,7 @@ public partial class ListCategory
     }
     private void AddButtonAction()
     {
-        navigationManager.NavigateTo("/category/list");
+        navigationManager.NavigateTo("/category/create");
     }
 
 }

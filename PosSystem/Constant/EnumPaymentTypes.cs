@@ -2,7 +2,7 @@
 
 public enum EnumPaymentTypes
 {
-    None = 0,
-    Cash=1,
-    Others=2
+    Cash=0,
+    WalletPay=1,
+    Card=2,
 }

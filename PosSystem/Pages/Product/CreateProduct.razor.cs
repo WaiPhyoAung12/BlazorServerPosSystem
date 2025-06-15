@@ -16,7 +16,7 @@ namespace PosSystem.Pages.Product;
 public partial class CreateProduct
 {
     [Parameter]
-    public string? ProductId { get; set; }
+    public string? Id { get; set; }
 
     [Inject]
     ICategoryService categoryService { get; set; } = default!;
@@ -33,6 +33,9 @@ public partial class CreateProduct
     [Inject]
     IOptions<ImageSetting> ImageSettingsOptions { get; set; } = default!;
 
+    [Parameter]
+    public bool IsEditForm { get; set; } = false;
+
 
     public ProductRequestModel Model { get; set; } = new();
     public string UploadFile { get; set; }
@@ -44,12 +47,14 @@ public partial class CreateProduct
 
     protected override async Task OnInitializedAsync()
     {
-        if(ProductId is not null)
+        if(Id is not null)
         {
-            var getProductResponse=await productService.GetProductById(Convert.ToInt32(ProductId));
+            var getProductResponse=await productService.GetProductById(Convert.ToInt32(Id));
             if (getProductResponse.IsSuccess)
             {
                 Model = getProductResponse.Data.Adapt<ProductRequestModel>();
+                Model.ImageName=Model.ImagePath;
+                Model.OldImageName = Model.ImagePath;
                 var settings = ImageSettingsOptions.Value;
                 ImagePath = Path.Combine(settings.AppUrl, settings.ImageUrl, settings.ProductImagesDirectory, Model.ImagePath);
             }
@@ -85,7 +90,13 @@ public partial class CreateProduct
     }
     private async Task SubmitCategory()
     {
-        var response = await productService.CreateProduct(Model);
+        var response = new Result<ProductModel>();
+
+        if (IsEditForm)
+            response = await productService.UpdateProduct(Model);
+        else
+            response = await productService.CreateProduct(Model);
+
         string message = response.Message == null ? response.MessageList.FirstOrDefault() : response.Message;
         var dialogResult = await dialogServiceProvider.ShowConfirmDialogAsync(message, "Category");
 
